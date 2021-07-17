@@ -1,0 +1,16 @@
+{
+  "version": "0.0.0",
+  "name": "@kmamal/key-commands",
+  "description": "key-commands",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kmamal/key-commands.git"
+  },
+  "main": "src/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@kmamal/sdl": "^0.3.2",
+    "@kmamal/util": "^0.0.49",
+    "canvas": "^2.8.0"
+  }
+}
