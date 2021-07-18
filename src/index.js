@@ -1,7 +1,8 @@
 const { ObjectMatcher } = require('./object-matcher')
-const { fromShortcut } = require('./shortcuts')
+const { fromShortcut, allModifiers } = require('./shortcuts')
+const { pick } = require('@kmamal/util/object/pick')
 
-const options = { indexable: [ 'key' ] }
+const options = { indexable: (x) => x['key'] ?? x['text'] ] }
 
 class KeyCommands {
 	constructor (modes) {
@@ -38,26 +39,43 @@ class KeyCommands {
 		if (!this._currentMode) { throw Object.assign(new Error("invalid mode"), { modeName }) }
 	}
 
-	dispatch (event) {
-		{
-			const matches = this._currentMode.matcher.match(event)
-			if (matches.length > 0) {
-				const binding = matches[0]
-				binding.command(event, binding)
-				return true
+	attach (window) {
+		const dispatch = (event) => {
+			{
+				const matches = this._currentMode.matcher.match(event)
+				if (matches.length > 0) {
+					const binding = matches[0]
+					binding.command(event, binding)
+					return true
+				}
 			}
+
+			{
+				const globalMatches = this._globalMode.matcher.match(event)
+				if (globalMatches.length > 0) {
+					const binding = globalMatches[0]
+					binding.command(event, binding)
+					return true
+				}
+			}
+
+			return false
 		}
 
-		{
-			const globalMatches = this._globalMode.matcher.match(event)
-			if (globalMatches.length > 0) {
-				const binding = globalMatches[0]
-				binding.command(event, binding)
-				return true
-			}
-		}
+		let lastModifiers = {}
 
-		return false
+		window.on('keyDown', (event) => {
+			lastModifiers = pick(event, allModifiers)
+			commands.dispatch(event)
+		})
+
+		window.on('textInput', (event) => {
+			const _event = {
+				...event,
+				...lastModifiers,
+			}
+			commands.dispatch(_event)
+		})
 	}
 }
 

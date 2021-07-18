@@ -40,8 +40,8 @@ class ObjectMatcher {
 
 	addPattern (pattern, value) {
 		let entries = this._entries
-		for (const prop of this._indexable) {
-			const key = pattern[prop]
+		for (const getIndexKey of this._indexable) {
+			const key = getIndexKey(pattern)
 			entries = entries.get(key)
 		}
 
@@ -51,8 +51,8 @@ class ObjectMatcher {
 
 	removePattern (pattern, value) {
 		let entries = this._entries
-		for (const prop of this._indexable) {
-			const key = pattern[prop]
+		for (const getIndexKey of this._indexable) {
+			const key = getIndexKey(pattern)
 			if (!entries.has(key)) { return }
 			entries = entries.get(key)
 		}
@@ -66,8 +66,8 @@ class ObjectMatcher {
 
 	match (obj) {
 		let entries = this._entries
-		for (const prop of this._indexable) {
-			const key = obj[prop]
+		for (const getIndexKey of this._indexable) {
+			const key = getIndexKey(obj)
 			if (!entries.has(key)) { return [] }
 			entries = entries.get(key)
 		}

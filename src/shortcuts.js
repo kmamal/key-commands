@@ -21,10 +21,14 @@ const fromShortcut = (shortcut) => {
 		if (key.length > 1) {
 			throw Object.assign(new Error("invalid key"), { shortcut, key })
 		}
+		pattern['shift'] = !pattern['shift']
 		pattern.text = key
 	}
 
 	return pattern
 }
 
-module.exports = { fromShortcut }
+module.exports = {
+	allModifiers,
+	fromShortcut,
+}
