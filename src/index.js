@@ -26,6 +26,10 @@ class KeyCommands {
 
 		this._currentMode = globalMode
 		this._currentModeName = 'global'
+
+		this._window = null
+		this._onKeyDown = null
+		this._onTextInput = null
 	}
 
 	get modes () { return this._modes }
@@ -39,42 +43,56 @@ class KeyCommands {
 		if (!this._currentMode) { throw Object.assign(new Error("invalid mode"), { modeName }) }
 	}
 
-	attach (window) {
-		const dispatch = (event) => {
-			{
-				const matches = this._currentMode.matcher.match(event)
-				if (matches.length > 0) {
-					const binding = matches[0]
-					binding.command(event, binding)
-					return true
-				}
+	_dispatch (event) {
+		{
+			const matches = this._currentMode.matcher.match(event)
+			if (matches.length > 0) {
+				const binding = matches[0]
+				binding.command(event, binding)
+				return true
 			}
-
-			{
-				const globalMatches = this._globalMode.matcher.match(event)
-				if (globalMatches.length > 0) {
-					const binding = globalMatches[0]
-					binding.command(event, binding)
-					return true
-				}
-			}
-
-			return false
 		}
+
+		{
+			const globalMatches = this._globalMode.matcher.match(event)
+			if (globalMatches.length > 0) {
+				const binding = globalMatches[0]
+				binding.command(event, binding)
+				return true
+			}
+		}
+
+		return false
+	}
+
+	attach (window) {
+		if (this._window) { this.detach() }
+		this._window = window
 
 		let lastModifiers = {}
 
-		window.on('keyDown', (event) => {
+		this._onKeyDown = (event) => {
 			lastModifiers = pick(event, allModifiers)
-			commands.dispatch(event)
-		})
+			this._dispatch(event)
+		}
 
-		window.on('textInput', (event) => {
-			commands.dispatch({
+		this._onTextInput = (event) => {
+			this._dispatch({
 				...event,
 				...lastModifiers,
 			})
-		})
+		}
+
+		window.on('keyDown', this._onKeyDown)
+		window.on('textInput', this._onTextInput)
+	}
+
+	detach () {
+		this._window.off('keyDown', this._onKeyDown)
+		this._window.off('textInput', this._onTextInput)
+		this._window = null
+		this._onKeyDown = null
+		this._onTextInput = null
 	}
 }
 
