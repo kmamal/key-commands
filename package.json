@@ -9,6 +9,7 @@
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
+    "@kmamal/sdl": "^0.3.2",
     "@kmamal/util": "^0.0.49",
     "canvas": "^2.8.0"
   }
