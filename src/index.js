@@ -2,7 +2,7 @@ const { ObjectMatcher } = require('./object-matcher')
 const { fromShortcut, allModifiers } = require('./shortcuts')
 const { pick } = require('@kmamal/util/object/pick')
 
-const options = { indexable: (x) => x['key'] ?? x['text'] ] }
+const options = { indexable: [ (x) => x['key'] ?? x['text'] ] }
 
 class KeyCommands {
 	constructor (modes) {
@@ -70,11 +70,10 @@ class KeyCommands {
 		})
 
 		window.on('textInput', (event) => {
-			const _event = {
+			commands.dispatch({
 				...event,
 				...lastModifiers,
-			}
-			commands.dispatch(_event)
+			})
 		})
 	}
 }
