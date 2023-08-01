@@ -1,4 +1,4 @@
-const { withHooks } = require('@kmamal/util/map/with-hooks')
+const { addDefault } = require('@kmamal/util/map/add-default')
 const { matches } = require('@kmamal/util/object/matches')
 const { indexOfWith } = require('@kmamal/util/array/index-of')
 const { isEqual } = require('@kmamal/util/object/is-equal')
@@ -14,6 +14,9 @@ const _recurseEntries = function * (collection) {
 	}
 }
 
+const nestFactory = (fn) =>
+	() => addDefault(new Map(), fn)
+
 class ObjectMatcher {
 	constructor (options = {}) {
 		const { indexable = [] } = options
@@ -22,8 +25,7 @@ class ObjectMatcher {
 
 		let factory = () => []
 		for (let i = 0; i < indexable.length; i++) {
-			const hooks = { factory }
-			factory = () => withHooks(hooks)
+			factory = nestFactory(factory)
 		}
 		this._entries = factory()
 		this._size = 0
