@@ -15,7 +15,11 @@ const _recurseEntries = function * (collection) {
 }
 
 const nestFactory = (fn) =>
-	() => addDefault(new Map(), fn)
+	() => {
+		const map = new Map()
+		addDefault(map, fn)
+		return map
+	}
 
 class ObjectMatcher {
 	constructor (options = {}) {
