@@ -16,6 +16,12 @@ class KeyCommands {
 		this._globalMode = globalMode
 
 		for (const mode of Object.values(modes)) {
+			mode.unshift({
+				shortcut: '?',
+				description: "Print help",
+				command: () => { this.printHelp() },
+			})
+
 			const matcher = new ObjectMatcher(options)
 			for (const binding of mode) {
 				const pattern = fromShortcut(binding.shortcut)
@@ -41,6 +47,7 @@ class KeyCommands {
 		this._currentMode = this._modes[modeName]
 
 		if (!this._currentMode) { throw Object.assign(new Error("invalid mode"), { modeName }) }
+		return this
 	}
 
 	_dispatch (event) {
@@ -85,6 +92,7 @@ class KeyCommands {
 
 		window.on('keyDown', this._onKeyDown)
 		window.on('textInput', this._onTextInput)
+		return this
 	}
 
 	detach () {
@@ -93,6 +101,22 @@ class KeyCommands {
 		this._window = null
 		this._onKeyDown = null
 		this._onTextInput = null
+		return this
+	}
+
+	printHelp () {
+		for (const [ modeName, bindings ] of Object.entries(this.modes)) {
+			if (bindings.length === 0) { continue }
+			console.log(`${modeName}-mode commands:`)
+			let maxLength = 0
+			for (const { shortcut } of bindings) {
+				maxLength = Math.max(maxLength, shortcut.length)
+			}
+			for (const { shortcut, description } of bindings) {
+				console.log(`  ${shortcut.padEnd(maxLength)}  ${description}`)
+			}
+		}
+		return this
 	}
 }
 
