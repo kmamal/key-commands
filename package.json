@@ -4,13 +4,12 @@
   "description": "key-commands",
   "repository": {
     "type": "git",
-    "url": "git@github.com:kmamal/key-commands.git"
+    "url": "git+ssh://git@github.com:kmamal/key-commands.git"
   },
   "exports": "./src/index.js",
   "license": "MIT",
   "dependencies": {
-    "@kmamal/sdl": "^0.7.8",
-    "@kmamal/util": "^0.1.13",
-    "canvas": "^2.11.2"
+    "@kmamal/sdl": "^0.11.5",
+    "@kmamal/util": "^0.2.24"
   }
 }
